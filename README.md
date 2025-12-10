@@ -1,16 +1,33 @@
 # Fork of `django-notifications` with some additional features
 
+## Why this fork?
+
+This fork was created to maintain compatibility with modern Python versions, specifically **Python 3.12+**. The original `django-notifications` library uses `distutils`, which was deprecated in Python 3.10 and removed in Python 3.12. This fork replaces all `distutils` dependencies with modern alternatives:
+
+- **`distutils.core.setup`** → **`setuptools.setup`**
+- **`distutils.version.StrictVersion`** → **`packaging.version.Version`**
+
+Additionally, this fork includes several enhancements:
+
+- REST API endpoints with custom serializers
+- Expo push notifications support
+- Cron job integration for automatic notification cleanup
+- Python 3.12 support
+
+If you're using Python 3.12 or later, this fork is the recommended version to use.
+
 ## Requirements
-- Django >= 3.8 *
-- Python >= 3.8 *
+
+- Django >= 3.8 \*
+- Python >= 3.8 \*
 - djangorestframework >= 3.13
 - django-model-utils >= 3.1.0
 - jsonfield >= 2.1.0
 - pandas >= 2.2.0
 - requests >= 2.30
 
-
 Add `django_notifications_pro` app to INSTALLED_APPS in your django settings.py:
+
 ```python
 INSTALLED_APPS = (
     ...,
@@ -22,17 +39,18 @@ INSTALLED_APPS = (
 )
 ```
 
-
 ## General ViewSets endpoints added (with custom serializer):
+
 - GET /api/notifications/ : Get all notifications for the current user
 - POST /api/notifications/read-all/ : Mark all notifications as read for the current user
 - GET /api/notifications/<int:pk>/ : Get a notification by id and mark it as read
 
-
 ## Cron for deleting old notifications
+
 You can set up a cron job to delete old notifications automatically.
 
 This install is needed to enable cron job.
+
 ```bash
 pip install django-notifications-pro[cron]
 service cron start
@@ -53,13 +71,12 @@ CRONJOBS = [
 ]
 ```
 
-
-
 ## Expo notifications
+
 You will be able to register devices, and each time a notification is sent, it will be delivered through Expo Go Notifications.
 
-
 This install is needed to enable expo notifications.
+
 ```bash
 pip install django-notifications-pro[expo]
 ```
@@ -69,37 +86,34 @@ Add the following to your settings.py :
 ```python
 DJANGO_NOTIFICATIONS_VIEWS = {
     'USE_EXPO_NOTIFICATIONS': True, # Set to True to enable expo notifications
-    'EXPO_APP_ID': '<your-expo-app-id>', 
+    'EXPO_APP_ID': '<your-expo-app-id>',
 }
 ```
 
 Then run the migrations:
+
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-##  Urls
- ### Expo Notifications
+## Urls
+
+### Expo Notifications
+
 - POST /api/expo-devices/register-device/ : Register a device to receive expo notifications
 - POST /api/expo-devices/unregister-device/ : Unregister a device to stop receiving expo notifications
 
-
 ## Contributing
 
--   [Juan Ignacio Borrelli](https://www.linkedin.com/in/juan-ignacio-borrelli/)
-    
+- [Juan Ignacio Borrelli](https://www.linkedin.com/in/juan-ignacio-borrelli/)
 
 Maintained and developed by [Linkchar Software Development](https://linkchar.com/).
-
-
-
 
 # Original `django-notifications` Documentation
 
 [![build-status](https://travis-ci.org/django-notifications/django-notifications.svg)](https://travis-ci.org/django-notifications/django-notifications)
 [![Coverage Status](https://coveralls.io/repos/github/django-notifications/django-notifications/badge.svg?branch=master)](https://coveralls.io/github/django-notifications/django-notifications?branch=master)
-
 
 [django-notifications](https://github.com/django-notifications/django-notifications) is a GitHub notification alike app for Django, it was derived from [django-activity-stream](https://github.com/justquick/django-activity-stream)
 
@@ -110,12 +124,12 @@ The major difference between `django-notifications` and `django-activity-stream`
 
 Notifications are actually actions events, which are categorized by four main components.
 
--   `Actor`. The object that performed the activity.
--   `Verb`. The verb phrase that identifies the action of the activity.
--   `Action Object`. *(Optional)* The object linked to the action
-    itself.
--   `Target`. *(Optional)* The object to which the activity was
-    performed.
+- `Actor`. The object that performed the activity.
+- `Verb`. The verb phrase that identifies the action of the activity.
+- `Action Object`. _(Optional)_ The object linked to the action
+  itself.
+- `Target`. _(Optional)_ The object to which the activity was
+  performed.
 
 `Actor`, `Action Object` and `Target` are `GenericForeignKeys` to any
 arbitrary Django object. An action is a description of an action that
@@ -124,7 +138,7 @@ optional `Target` that results in an `Action Object` getting
 created/updated/deleted.
 
 For example: [justquick](https://github.com/justquick/) `(actor)`
-*closed* `(verb)` [issue
+_closed_ `(verb)` [issue
 2](https://github.com/justquick/django-activity-stream/issues/2)
 `(action_object)` on
 [activity-stream](https://github.com/justquick/django-activity-stream/)
@@ -135,16 +149,18 @@ Spec: <http://activitystrea.ms/specs/atom/1.0/>
 
 ## Requirements
 
--   Python 3.7, 3.8, 3.9, 3.10, 3.11
--   Django 3.2, 4.0, 4.1
+- Python 3.7, 3.8, 3.9, 3.10, 3.11
+- Django 3.2, 4.0, 4.1
 
 ## Installation
 
 Installation is easy using `pip` and will install all required
 libraries.
+
 ```bash
 $ pip install django-notifications-hq
 ```
+
 or get it from source
 
 ```bash
@@ -199,6 +215,7 @@ def my_handler(sender, instance, created, **kwargs):
 
 post_save.connect(my_handler, sender=MyModel)
 ```
+
 To generate an notification anywhere in your code, simply import the
 notify signal and send it with your actor, recipient, and verb.
 
@@ -216,27 +233,27 @@ notify.send(actor, recipient, verb, action_object, target, level, description, p
 
 Arguments:
 
--   **actor**: An object of any type. (Required) Note: Use
-    **sender** instead of **actor** if you intend to use keyword
-    arguments
--   **recipient**: A **Group** or a **User QuerySet** or a list of
-    **User**. (Required)
--   **verb**: An string. (Required)
--   **action\_object**: An object of any type. (Optional)
--   **target**: An object of any type. (Optional)
--   **level**: One of Notification.LEVELS (\'success\', \'info\',
-    \'warning\', \'error\') (default=info). (Optional)
--   **description**: An string. (Optional)
--   **public**: An boolean (default=True). (Optional)
--   **timestamp**: An tzinfo (default=timezone.now()). (Optional)
+- **actor**: An object of any type. (Required) Note: Use
+  **sender** instead of **actor** if you intend to use keyword
+  arguments
+- **recipient**: A **Group** or a **User QuerySet** or a list of
+  **User**. (Required)
+- **verb**: An string. (Required)
+- **action_object**: An object of any type. (Optional)
+- **target**: An object of any type. (Optional)
+- **level**: One of Notification.LEVELS (\'success\', \'info\',
+  \'warning\', \'error\') (default=info). (Optional)
+- **description**: An string. (Optional)
+- **public**: An boolean (default=True). (Optional)
+- **timestamp**: An tzinfo (default=timezone.now()). (Optional)
 
 ### Extra data
 
 You can attach arbitrary data to your notifications by doing the
 following:
 
--   Add to your settings.py:
-    `DJANGO_NOTIFICATIONS_CONFIG = { 'USE_JSONFIELD': True}`
+- Add to your settings.py:
+  `DJANGO_NOTIFICATIONS_CONFIG = { 'USE_JSONFIELD': True}`
 
 Then, any extra arguments you pass to `notify.send(...)` will be
 attached to the `.data` attribute of the notification object. These will
@@ -250,8 +267,8 @@ By default, `delete/(?P<slug>\d+)/` deletes specified notification
 record from DB. You can change this behaviour to \"mark
 `Notification.deleted` field as `True`\" by:
 
--   Add to your settings.py:
-    `DJANGO_NOTIFICATIONS_CONFIG = { 'SOFT_DELETE': True}`
+- Add to your settings.py:
+  `DJANGO_NOTIFICATIONS_CONFIG = { 'SOFT_DELETE': True}`
 
 With this option, QuerySet methods `unread` and `read` contain one more
 filter: `deleted=False`. Meanwhile, QuerySet methods `deleted`,
@@ -401,8 +418,8 @@ There are two possible API calls that can be made:
 
     Query string arguments:
 
-    -   **max** - maximum length of unread list.
-    -   **mark\_as\_read** - mark notification in list as read.
+    - **max** - maximum length of unread list.
+    - **mark_as_read** - mark notification in list as read.
 
     For example, get `api/unread_list/?max=3&mark_as_read=true` returns
     3 notifications and mark them read (remove from list on next
@@ -440,7 +457,7 @@ There are two possible API calls that can be made:
         of javascript functions to call each period.
     6.  `api_name` (default `list`) - The name of the API to call (this
         can be either `list` or `count`).
-    7. ``mark_as_read`` (default ``False``) - Marks notifications as read when fetched.
+    7.  `mark_as_read` (default `False`) - Marks notifications as read when fetched.
 
 3.  To insert a live-updating unread count, use the following template:
 
@@ -448,9 +465,9 @@ There are two possible API calls that can be made:
 
     `live_notify_badge` takes the following arguments:
 
-    -  `badge_class` (default `live_notify_badge`) - The identifier
-        `class` for the `<span>` element that will be created to show
-        the unread count.
+    - `badge_class` (default `live_notify_badge`) - The identifier
+      `class` for the `<span>` element that will be created to show
+      the unread count.
 
 4.  To insert a live-updating unread list, use the following template:
 
@@ -458,9 +475,9 @@ There are two possible API calls that can be made:
 
     `live_notify_list` takes the following arguments:
 
-    -  `list_class` (default `live_notify_list`) - The identifier
-        `class` for the `<ul>` element that will be created to insert
-        the list of notifications into.
+    - `list_class` (default `live_notify_list`) - The identifier
+      `class` for the `<ul>` element that will be created to insert
+      the list of notifications into.
 
 ### Using the live-updater with bootstrap
 
@@ -500,10 +517,10 @@ messages and log them to the console:
 
 ```javascript
 function my_special_notification_callback(data) {
-    for (var i=0; i < data.unread_list.length; i++) {
-        msg = data.unread_list[i];
-        console.log(msg);
-    }
+  for (var i = 0; i < data.unread_list.length; i++) {
+    msg = data.unread_list[i];
+    console.log(msg);
+  }
 }
 ```
 
@@ -601,12 +618,12 @@ unset SAMPLE_APP
 
 Core contributors (in alphabetical order):
 
--   [Alvaro Leonel](https://github.com/AlvaroLQueiroz)
--   [Federico Capoano](https://github.com/nemesisdesign)
--   [Samuel Spencer](https://github.com/LegoStormtroopr)
--   [Yang Yubo](https://github.com/yangyubo)
--   [YPCrumble](https://github.com/YPCrumble)
--   [Zhongyuan Zhang](https://github.com/zhang-z)
+- [Alvaro Leonel](https://github.com/AlvaroLQueiroz)
+- [Federico Capoano](https://github.com/nemesisdesign)
+- [Samuel Spencer](https://github.com/LegoStormtroopr)
+- [Yang Yubo](https://github.com/yangyubo)
+- [YPCrumble](https://github.com/YPCrumble)
+- [Zhongyuan Zhang](https://github.com/zhang-z)
 
 ## Contribute
 

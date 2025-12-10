@@ -4,10 +4,7 @@
 import ast
 import re
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup  # pylint: disable=no-name-in-module,import-error
+from setuptools import setup
 
 
 _version_re = re.compile(r'__version__\s+=\s+(.*)')  # pylint: disable=invalid-name
@@ -32,6 +29,7 @@ setup(
         'swapper',
         'pandas>=2.2.0',
         'requests>=2.30',
+        'packaging',
     ],
     extras_require={
         'expo': ['exponent-server-sdk~=2.0.0'],
@@ -64,6 +62,7 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         'Topic :: Utilities'
     ],
     keywords='django notifications github action event stream expo push viewset cron crontab',
